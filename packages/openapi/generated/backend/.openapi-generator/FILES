@@ -1,0 +1,17 @@
+.openapi-generator-ignore
+README.md
+pom.xml
+src/main/java/org/openapitools/api/ApiApi.java
+src/main/java/org/openapitools/api/ApiUtil.java
+src/main/java/org/openapitools/configuration/EnumConverterConfiguration.java
+src/main/java/org/openapitools/model/CreateTagRequest.java
+src/main/java/org/openapitools/model/CreateTimeBoxRequest.java
+src/main/java/org/openapitools/model/DailySummaryResponse.java
+src/main/java/org/openapitools/model/ErrorResponse.java
+src/main/java/org/openapitools/model/TagListResponse.java
+src/main/java/org/openapitools/model/TagResponse.java
+src/main/java/org/openapitools/model/TimeBoxListResponse.java
+src/main/java/org/openapitools/model/TimeBoxPriority.java
+src/main/java/org/openapitools/model/TimeBoxResponse.java
+src/main/java/org/openapitools/model/TimeBoxStatus.java
+src/main/java/org/openapitools/model/UpdateTimeBoxRequest.java
