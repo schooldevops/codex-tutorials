@@ -1,0 +1,405 @@
+openapi: 3.0.3
+info:
+  title: Time-Box Planner API
+  version: 0.1.0
+  description: Contract-first API spec for Time-Box Planner MVP.
+servers:
+  - url: http://localhost:8080
+    description: Local backend
+
+tags:
+  - name: TimeBoxes
+  - name: Tags
+  - name: Summary
+
+paths:
+  /api/v1/time-boxes:
+    post:
+      tags: [TimeBoxes]
+      summary: Create a time-box
+      operationId: createTimeBox
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTimeBoxRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimeBoxResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+    get:
+      tags: [TimeBoxes]
+      summary: List time-boxes
+      operationId: listTimeBoxes
+      parameters:
+        - in: query
+          name: date
+          schema:
+            type: string
+            format: date
+        - in: query
+          name: from
+          schema:
+            type: string
+            format: date-time
+        - in: query
+          name: to
+          schema:
+            type: string
+            format: date-time
+        - in: query
+          name: status
+          schema:
+            $ref: '#/components/schemas/TimeBoxStatus'
+        - in: query
+          name: tagId
+          schema:
+            type: string
+            format: uuid
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - in: query
+          name: size
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimeBoxListResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+
+  /api/v1/time-boxes/{id}:
+    get:
+      tags: [TimeBoxes]
+      summary: Get time-box by id
+      operationId: getTimeBox
+      parameters:
+        - $ref: '#/components/parameters/TimeBoxId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimeBoxResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+    patch:
+      tags: [TimeBoxes]
+      summary: Update time-box partially
+      operationId: updateTimeBox
+      parameters:
+        - $ref: '#/components/parameters/TimeBoxId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTimeBoxRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimeBoxResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+    delete:
+      tags: [TimeBoxes]
+      summary: Delete time-box
+      operationId: deleteTimeBox
+      parameters:
+        - $ref: '#/components/parameters/TimeBoxId'
+      responses:
+        '204':
+          description: No Content
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+
+  /api/v1/tags:
+    post:
+      tags: [Tags]
+      summary: Create tag
+      operationId: createTag
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTagRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TagResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+    get:
+      tags: [Tags]
+      summary: List tags
+      operationId: listTags
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TagListResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+
+  /api/v1/tags/{id}:
+    delete:
+      tags: [Tags]
+      summary: Delete tag
+      operationId: deleteTag
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: No Content
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+
+  /api/v1/summary/daily:
+    get:
+      tags: [Summary]
+      summary: Daily summary
+      operationId: getDailySummary
+      parameters:
+        - in: query
+          name: date
+          required: true
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DailySummaryResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+
+components:
+  parameters:
+    TimeBoxId:
+      in: path
+      name: id
+      required: true
+      schema:
+        type: string
+        format: uuid
+
+  responses:
+    ErrorResponse:
+      description: Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+  schemas:
+    TimeBoxStatus:
+      type: string
+      enum: [PLANNED, IN_PROGRESS, DONE, CANCELLED]
+
+    TimeBoxPriority:
+      type: string
+      enum: [LOW, MEDIUM, HIGH]
+
+    CreateTimeBoxRequest:
+      type: object
+      required: [title, startAt, endAt, priority]
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 120
+        description:
+          type: string
+          maxLength: 2000
+        startAt:
+          type: string
+          format: date-time
+        endAt:
+          type: string
+          format: date-time
+        priority:
+          $ref: '#/components/schemas/TimeBoxPriority'
+        tagIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+
+    UpdateTimeBoxRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 120
+        description:
+          type: string
+          maxLength: 2000
+        startAt:
+          type: string
+          format: date-time
+        endAt:
+          type: string
+          format: date-time
+        status:
+          $ref: '#/components/schemas/TimeBoxStatus'
+        priority:
+          $ref: '#/components/schemas/TimeBoxPriority'
+        tagIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+
+    TagResponse:
+      type: object
+      required: [id, name]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        color:
+          type: string
+
+    TimeBoxResponse:
+      type: object
+      required: [id, title, startAt, endAt, status, priority, createdAt, updatedAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+        startAt:
+          type: string
+          format: date-time
+        endAt:
+          type: string
+          format: date-time
+        status:
+          $ref: '#/components/schemas/TimeBoxStatus'
+        priority:
+          $ref: '#/components/schemas/TimeBoxPriority'
+        completedAt:
+          type: string
+          format: date-time
+          nullable: true
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/TagResponse'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    TimeBoxListResponse:
+      type: object
+      required: [items, page, size, totalElements]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/TimeBoxResponse'
+        page:
+          type: integer
+        size:
+          type: integer
+        totalElements:
+          type: integer
+          format: int64
+
+    CreateTagRequest:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 50
+        color:
+          type: string
+
+    TagListResponse:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/TagResponse'
+
+    DailySummaryResponse:
+      type: object
+      required: [date, plannedCount, doneCount, totalPlannedMinutes, totalDoneMinutes]
+      properties:
+        date:
+          type: string
+          format: date
+        plannedCount:
+          type: integer
+        doneCount:
+          type: integer
+        totalPlannedMinutes:
+          type: integer
+        totalDoneMinutes:
+          type: integer
+
+    ErrorResponse:
+      type: object
+      required: [code, message, requestId, timestamp]
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        requestId:
+          type: string
+          format: uuid
+        timestamp:
+          type: string
+          format: date-time
