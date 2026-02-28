@@ -11,6 +11,7 @@
 - Framework: Spring Boot
 - AI: Spring AI
 - Data Access: jOOQ
+- Build Tool: Gradle
 - API Contract Server: OpenAPI Generator (`spring`, interfaceOnly)
 - Runtime DB: PostgreSQL
 

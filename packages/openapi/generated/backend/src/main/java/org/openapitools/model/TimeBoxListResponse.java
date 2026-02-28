@@ -23,7 +23,7 @@ import jakarta.annotation.Generated;
  * TimeBoxListResponse
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-02-28T15:29:13.021091+09:00[Asia/Seoul]", comments = "Generator version: 7.14.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", comments = "Generator version: 7.14.0")
 public class TimeBoxListResponse {
 
   @Valid

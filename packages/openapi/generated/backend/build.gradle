@@ -1,20 +1,3 @@
-#!/usr/bin/env bash
-set -euo pipefail
-
-SPEC="packages/openapi/spec/timebox-planner.openapi.yaml"
-OUT="packages/openapi/generated/backend"
-
-openapi-generator-cli generate \
-  -i "$SPEC" \
-  -g spring \
-  -o "$OUT" \
-  --additional-properties=interfaceOnly=true,useSpringBoot3=true,delegatePattern=true,gradleBuildFile=true,hideGenerationTimestamp=true
-
-cat > "$OUT/settings.gradle" <<'EOF'
-rootProject.name = "timebox-openapi-backend-stub"
-EOF
-
-cat > "$OUT/build.gradle" <<'EOF'
 plugins {
     id 'java'
 }
@@ -47,8 +30,3 @@ dependencies {
 tasks.named('test') {
     useJUnitPlatform()
 }
-EOF
-
-rm -f "$OUT/pom.xml"
-
-echo "Generated backend stub at $OUT"
