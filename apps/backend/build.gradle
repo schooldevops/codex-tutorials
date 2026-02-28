@@ -2,6 +2,8 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.3.5'
     id 'io.spring.dependency-management' version '1.1.6'
+    id 'org.flywaydb.flyway' version '10.20.1'
+    id 'nu.studer.jooq' version '9.0'
 }
 
 group = 'com.timeboxplanner'
@@ -17,10 +19,18 @@ repositories {
     mavenCentral()
 }
 
+def dbHost = System.getenv('DB_HOST') ?: 'localhost'
+def dbPort = System.getenv('DB_PORT') ?: '5432'
+def dbName = System.getenv('DB_NAME') ?: 'timebox'
+def dbUser = System.getenv('DB_USER') ?: 'timebox'
+def dbPassword = System.getenv('DB_PASSWORD') ?: 'timebox'
+def dbUrl = "jdbc:postgresql://${dbHost}:${dbPort}/${dbName}"
+
 sourceSets {
     main {
         java {
             srcDirs += ['../../packages/openapi/generated/backend/src/main/java']
+            srcDirs += ["$buildDir/generated-src/jooq/main"]
         }
     }
 }
@@ -36,8 +46,46 @@ dependencies {
     implementation 'jakarta.annotation:jakarta.annotation-api:2.1.1'
 
     runtimeOnly 'org.postgresql:postgresql'
+    jooqGenerator 'org.postgresql:postgresql'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+flyway {
+    url = dbUrl
+    user = dbUser
+    password = dbPassword
+    locations = ['filesystem:src/main/resources/db/migration']
+}
+
+jooq {
+    version = '3.19.16'
+    edition = nu.studer.gradle.jooq.JooqEdition.OSS
+    configurations {
+        main {
+            generateSchemaSourceOnCompilation = false
+            generationTool {
+                jdbc {
+                    driver = 'org.postgresql.Driver'
+                    url = dbUrl
+                    user = dbUser
+                    password = dbPassword
+                }
+                generator {
+                    name = 'org.jooq.codegen.DefaultGenerator'
+                    database {
+                        name = 'org.jooq.meta.postgres.PostgresDatabase'
+                        inputSchema = 'public'
+                        excludes = 'flyway_schema_history'
+                    }
+                    target {
+                        packageName = 'com.timeboxplanner.backend.jooq'
+                        directory = "$buildDir/generated-src/jooq/main"
+                    }
+                }
+            }
+        }
+    }
 }
 
 tasks.named('test') {

@@ -21,5 +21,17 @@
 - 명령: `JAVA_HOME=$HOME/.sdkman/candidates/java/21.0.9-amzn PATH=$JAVA_HOME/bin:$PATH gradle -p apps/backend test`
 - 결과: `BUILD SUCCESSFUL`
 
+## 추가 진행 (2단계) - PostgreSQL/Flyway/jOOQ 연결
+- [x] `application.yml`에 datasource/flyway/jooq 기본 설정 반영
+- [x] Flyway 초기 마이그레이션(`V1__init_timebox_schema.sql`) 추가
+- [x] Gradle에 Flyway/jOOQ 플러그인 및 설정 추가
+- [x] `flywayMigrate`, `generateJooq` 태스크 dry-run 성공
+
+### 2단계 검증
+- 명령: `JAVA_HOME=$HOME/.sdkman/candidates/java/21.0.9-amzn PATH=$JAVA_HOME/bin:$PATH gradle -p apps/backend test`
+- 결과: `BUILD SUCCESSFUL`
+- 명령: `JAVA_HOME=$HOME/.sdkman/candidates/java/21.0.9-amzn PATH=$JAVA_HOME/bin:$PATH gradle -p apps/backend -m flywayMigrate generateJooq`
+- 결과: `:flywayMigrate SKIPPED`, `:generateJooq SKIPPED`, `BUILD SUCCESSFUL`
+
 ## 다음 Step 예고
 - Step06에서 PostgreSQL + Flyway + jOOQ 생성 흐름을 실제 연결한다.
