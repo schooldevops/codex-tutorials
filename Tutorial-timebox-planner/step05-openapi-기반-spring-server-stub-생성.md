@@ -33,5 +33,13 @@
 - 명령: `JAVA_HOME=$HOME/.sdkman/candidates/java/21.0.9-amzn PATH=$JAVA_HOME/bin:$PATH gradle -p apps/backend -m flywayMigrate generateJooq`
 - 결과: `:flywayMigrate SKIPPED`, `:generateJooq SKIPPED`, `BUILD SUCCESSFUL`
 
+## 추가 진행 (3단계) - 로컬 DB 실행 + jOOQ 예시 쿼리
+- [x] `apps/backend/docker-compose.yml` 추가 (PostgreSQL 16)
+- [x] `apps/backend/scripts/db-up.sh`, `db-down.sh`, `db-logs.sh` 추가
+- [x] `apps/backend/.env.example` 추가
+- [x] `TimeBoxRepository`에 일자별 집계 메서드 추가
+- [x] `JooqTimeBoxRepository`에 DSLContext 기반 예시 쿼리 구현
+- [x] `SummaryServiceImpl`에서 리포지토리 집계값 반환 구현
+
 ## 다음 Step 예고
 - Step06에서 PostgreSQL + Flyway + jOOQ 생성 흐름을 실제 연결한다.
